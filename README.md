@@ -24,42 +24,75 @@ I have selected high-efficiency components to ensure speed and precision:
 ---
 
 ## Wiring Diagram
-*Auto-generated system architecture using Mermaid.js:*
 
-```mermaid
-graph TD
-    %% Node Styles
-    classDef pwr fill:#f96,stroke:#333,stroke-width:2px;
-    classDef micro fill:#3178C6,stroke:#333,stroke-width:2px,color:white;
-    classDef driver fill:#ff9,stroke:#333,stroke-width:2px;
-    classDef motor fill:#ddd,stroke:#333,stroke-width:2px;
-    classDef sensor fill:#9f9,stroke:#333,stroke-width:2px;
+```text
+       [ 7.4V LiPo BATTERY ]
+              |      |
+            (Red)  (Black)
+              |      |
+          [ SWITCH ] |
+              |      |
+              v      v
+      +----------------------+          +-------------------------+
+      |     ARDUINO NANO     |          |   TB6612FNG DRIVER      |
+      |                  VIN | <--(Red)-| VM (Motor Power)        |
+      |                  GND | --(Blk)->| GND                     |
+      |                   5V | --(Red)->| VCC (Logic Power)       |
+      |                      |          | STBY (Connect to 5V)    |
+      |                   D3 | -------->| PWMA                    |
+      |                   D4 | -------->| AIN1                    |
+      |                   D5 | -------->| AIN2                    |
+      |                   D7 | -------->| BIN1                    |
+      |                   D8 | -------->| BIN2                    |
+      |                   D9 | -------->| PWMB                    |
+      |                      |          |                         |
+      |                      |          | AO1 / AO2 --> [L MOTOR] |
+      |                      |          | BO1 / BO2 --> [R MOTOR] |
+      +----------------------+          +-------------------------+
 
-    %% Components
-    Bat[7.4V LiPo Battery]:::pwr
-    Switch[Power Switch]:::pwr
-    Nano[Arduino Nano]:::micro
-    Driver[TB6612FNG Driver]:::driver
-    MotL[Left Motor N20]:::motor
-    MotR[Right Motor N20]:::motor
-    Sensors[3x VL53L0X Sensors]:::sensor
+         [ SENSORS (VL53L0X) ]
+         |  VCC -> 5V        |
+         |  GND -> GND       |
+         |  SDA -> A4        |
+         |  SCL -> A5        |
+         |  XSHUT -> D10/11/12|
+         +-------------------+
+```
+## Software & Logic
 
-    %% Power Connections
-    Bat -->|GND| Nano
-    Bat -->|GND| Driver
-    Bat -->|GND| Sensors
-    Bat -->|V+ 7.4V| Switch
-    Switch -->|VIN| Nano
-    Switch -->|VM Motor Pwr| Driver
-    Nano -->|5V Out| Driver
-    Nano -->|5V Out| Sensors
+The intelligence of the robot relies on two main components:
+1. PID Controller (Stability)
 
-    %% Control Signals
-    Nano -->|PWM/Dir D3, D4, D5| Driver
-    Nano -->|PWM/Dir D9, D7, D8| Driver
-    Driver -->|Output A| MotL
-    Driver -->|Output B| MotR
+To keep the robot perfectly centered between walls without zigzagging, a PID (Proportional-Integral-Derivative) control loop corrects the motor speeds in real-time based on sensor error.
 
-    %% Sensor Communication
-    Sensors -->|I2C SDA/SCL| Nano
-    Sensors -->|XSHUT D10, D11, D12| Nano
+$$ Output = K_p \cdot e(t) + K_d \cdot \frac{de}{dt} + K_i \cdot \int e(t) dt $$
+2. Navigation (Flood Fill Algorithm)
+
+The robot treats the maze as a grid.
+
+    Exploration Mode: The robot traverses the maze, marking walls and assigning "distance values" to each cell relative to the center.
+
+    Fast Run: Once the center is found, the robot calculates the optimal path and executes a high-speed run.
+
+## Roadmap
+
+    [x] Define Hardware Bill of Materials (BOM).
+
+    [x] Design Circuit Diagram / Schematic.
+
+    [ ] 3D Model the Chassis.
+
+    [ ] Assemble Electronics on Breadboard for testing.
+
+    [ ] Implement Basic Motor Control (Forward/Turn).
+
+    [ ] Implement PID Wall Following.
+
+    [ ] Implement Flood Fill Maze Solving Logic.
+
+## Contributing
+
+This project is open source! Suggestions and pull requests are welcome.
+License
+
+Distributed under the MIT License.
