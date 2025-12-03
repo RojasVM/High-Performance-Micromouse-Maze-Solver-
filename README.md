@@ -63,26 +63,3 @@ graph TD
     %% Sensor Communication
     Sensors -->|I2C SDA/SCL| Nano
     Sensors -->|XSHUT D10, D11, D12| Nano
-
-## Software & Logic
-The intelligence of the robot relies on two main components:
-
-1.  **PID Controller:** Ensures the robot moves in a perfectly straight line and stays centered between walls by constantly correcting motor speed based on sensor error.
-2.  **Flood Fill Algorithm:**
-    * **Exploration Mode:** The robot traverses the maze, updating a virtual map in memory to mark walls and open paths.
-    * **Fast Run:** Once the center is found, the robot calculates the optimal path and executes a high-speed run.
-
-## Roadmap
-- [x] Define Hardware Bill of Materials (BOM).
-- [x] Design Circuit Diagram / Schematic.
-- [ ] 3D Model the Chassis.
-- [ ] Assemble Electronics on Breadboard for testing.
-- [ ] Implement Basic Motor Control (Forward/Turn).
-- [ ] Implement PID Wall Following.
-- [ ] Implement Flood Fill Maze Solving Logic.
-
-## Contributing
-This project is open source! Suggestions and pull requests are welcome.
-
-## License
-Distributed under the MIT License.
